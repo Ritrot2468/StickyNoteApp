@@ -1,0 +1,26 @@
+{"stickyNotes": [
+    {
+        "fontName": "Calibri",
+        "noteName": "INPUT",
+        "taskList": {
+            "completedTasks": [],
+            "incompleteTasks": [],
+            "tasks": []
+        },
+        "fontSize": 11,
+        "noteColor": -256,
+        "fontColor": -16777216
+    },
+    {
+        "fontName": "Calibri",
+        "noteName": "Runner",
+        "taskList": {
+            "completedTasks": [],
+            "incompleteTasks": [],
+            "tasks": []
+        },
+        "fontSize": 11,
+        "noteColor": -256,
+        "fontColor": -16777216
+    }
+]}

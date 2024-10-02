@@ -1,0 +1,47 @@
+{"stickyNotes": [
+    {
+        "fontName": "Arial",
+        "noteName": "Light",
+        "taskList": {
+            "completedTasks": [{
+                "taskDescription": "Run a mile",
+                "isCompleted": true
+            }],
+            "incompleteTasks": [{
+                "taskDescription": "Get new shoes",
+                "isCompleted": false
+            }],
+            "tasks": [
+                {
+                    "taskDescription": "Run a mile",
+                    "isCompleted": true
+                },
+                {
+                    "taskDescription": "Get new shoes",
+                    "isCompleted": false
+                }
+            ]
+        },
+        "fontSize": 11,
+        "noteColor": -256,
+        "fontColor": -16777216
+    },
+    {
+        "fontName": "Times New Roman",
+        "noteName": "Tray",
+        "taskList": {
+            "completedTasks": [],
+            "incompleteTasks": [{
+                "taskDescription": "Get new shoes",
+                "isCompleted": false
+            }],
+            "tasks": [{
+                "taskDescription": "Get new shoes",
+                "isCompleted": false
+            }]
+        },
+        "fontSize": 16,
+        "noteColor": -20561,
+        "fontColor": -65536
+    }
+]}

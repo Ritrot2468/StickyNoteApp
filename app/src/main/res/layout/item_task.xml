@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:padding="10dp"
+    android:layout_marginBottom="20dp">
+
+    <!-- Checkbox to display task completion state -->
+    <CheckBox
+        android:id="@+id/todo_item_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="8dp" />
+
+    <!-- TextView to display the task content/description -->
+    <EditText
+        android:id="@+id/task_content"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:textColor="@color/black"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:layout_alignTop="@id/todo_item_checkbox"
+        android:layout_marginTop="4dp"
+        android:layout_toRightOf="@id/todo_item_checkbox"
+        android:layout_toLeftOf="@id/delete_item_button"   />
+        <!-- Delete button for removing the task -->
+    <ImageView
+        android:id="@+id/delete_item_button"
+        android:layout_width="60dp"
+        android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@id/todo_item_checkbox"
+        android:clickable="true"
+        android:src="@drawable/close_x" />
+
+</RelativeLayout>

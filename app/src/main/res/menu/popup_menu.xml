@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.stickynoteapplication.activities.MainActivity">
+    <item
+        android:id="@+id/popup_add_sticky_note"
+        android:icon="@drawable/baseline_sticky_note_2_24"
+        android:title="Add Sticky Note" />
+    <item
+        android:id="@+id/popup_add_todo_list"
+        android:icon="@drawable/baseline_task_24"
+        android:title="Add ToDo List"
+        />
+
+</menu>

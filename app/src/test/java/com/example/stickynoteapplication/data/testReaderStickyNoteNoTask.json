@@ -1,0 +1,15 @@
+{
+  "stickyNotes": [{
+    "fontName": "Calibri",
+    "noteName": "Light",
+    "fontSize": 11,
+    "noteColor": -256,
+    "fontColor": -16777216
+  }],
+  "todoLists": [{
+    "name": "Runner",
+    "completedTasks": [],
+    "incompleteTasks": [],
+    "tasks": []
+  }]
+}

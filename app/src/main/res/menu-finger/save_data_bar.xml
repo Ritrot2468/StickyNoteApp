@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.stickynoteapplication.activities.MainActivity">
+
+    <item
+        android:id="@+id/save_file"
+        android:enabled="true"
+        android:icon="@android:drawable/ic_menu_save"
+        android:menuCategory="container"
+        android:title="Save Notes"
+        android:visible="true" />
+    <item
+        android:id="@+id/load_file"
+        android:icon="@android:drawable/ic_menu_upload"
+        android:title="Load Notes"
+        android:visible="true" />
+</menu>
+
+
+
+

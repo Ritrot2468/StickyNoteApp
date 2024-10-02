@@ -1,0 +1,72 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutNote"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="12dp"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/palette4"
+    android:elevation="4dp"
+    android:clipToPadding="false">
+
+    <!-- Frame for Delete Button in the top-right corner -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end">
+
+        <ImageButton
+            android:id="@+id/delete_button"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="end"
+            android:background="@drawable/close_x"
+            android:contentDescription="Delete" />
+    </FrameLayout>
+
+    <!-- Preview image (optional) -->
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/imageNote_item"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:adjustViewBounds="true"
+        android:visibility="gone"
+        app:riv_corner_radius="10dp"
+        android:scaleType="centerCrop"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- To-do list title -->
+    <TextView
+        android:id="@+id/textTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Sneak Preview of the To-do list -->
+    <LinearLayout
+        android:id="@+id/task_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="12dp">
+
+    </LinearLayout>
+
+    <!-- Date and time -->
+    <TextView
+        android:id="@+id/textDateTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="8dp"
+        android:fontFamily="sans-serif-thin"
+        android:textColor="@color/black"
+        android:textSize="12sp"/>
+
+</LinearLayout>
