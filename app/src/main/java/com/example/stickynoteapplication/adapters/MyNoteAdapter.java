@@ -60,10 +60,11 @@ public class MyNoteAdapter extends RecyclerView.Adapter<MyNoteAdapter.noteViewHo
         position = holder.getAdapterPosition();
         MyNoteEntities currentNote = noteEntitiesList.get(position);
         holder.setNote(currentNote);
+        int finalPosition = position;
         holder.deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deleteNote(currentNote, position);
+                deleteNote(currentNote, finalPosition);
             }
         });
     }

@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -28,24 +27,26 @@ import java.util.List;
 public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoListViewHolder> {
 
     private List<MyNoteEntities> notes;
-    //private TaskViewModel taskViewModel;  // Initialize as needed
+    private TaskViewModel taskViewModel;  // Initialize as needed
+    private OnNoteClickListener onNoteClickListener;
+    private Context context;
 
     public interface OnNoteClickListener {
         void onTodoClick(int position);
     }
-    private OnNoteClickListener onNoteClickListener;
-    private Context context;
+
 
     public ToDoListAdapter(Context context, OnNoteClickListener onNoteClickListener) {
         this.context = context;
         this.onNoteClickListener = onNoteClickListener;
         this.notes = new ArrayList<>();
+        this.taskViewModel = new ViewModelProvider((FragmentActivity) context).get(TaskViewModel.class);
     }
     @NonNull
     @Override
     public ToDoListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.todolist_item, parent, false);
-        return new ToDoListViewHolder(view);
+        return new ToDoListViewHolder(view, onNoteClickListener);
     }
 
 
@@ -56,7 +57,7 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
             holder.titleTextView.setText(note.getTitle());
 
             // Load tasks for this note
-            TaskViewModel taskViewModel = new ViewModelProvider((FragmentActivity) holder.itemView.getContext()).get(TaskViewModel.class);
+
             taskViewModel.getTasksforNote(note.getId()).observe((LifecycleOwner) holder.itemView.getContext(), tasks -> {
                 if (tasks != null) {
                     holder.updateTasks(tasks);
@@ -82,33 +83,35 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
 
     }
 
-    public static class ToDoListViewHolder extends RecyclerView.ViewHolder {
+    public static class ToDoListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView titleTextView;
         LinearLayout taskContainer;
         TextView textDateTime;
         ImageView imageNote;
         ImageButton deleteButton;
+        OnNoteClickListener onNoteClickListener;
 
-        //OnNoteClickListener onNoteClickListener;
-
-        public ToDoListViewHolder(View itemView, OnNoteClickListener onNoteClickListener) {
+        public ToDoListViewHolder(View itemView, OnNoteClickListener listener) {
             super(itemView);
             titleTextView = itemView.findViewById(R.id.textTitle);
-            taskContainer = itemView.findViewById(R.id.todo_items_container);
+            taskContainer = itemView.findViewById(R.id.task_container);
             textDateTime = itemView.findViewById(R.id.textDateTime);
             imageNote = itemView.findViewById(R.id.imageNote_item);
             deleteButton = itemView.findViewById(R.id.delete_button);
-            this.on = onNoteClickListener;
+            this.onNoteClickListener = listener;
+
+            itemView.setOnClickListener(this);
+            deleteButton.setOnClickListener(v -> {
+                // Handle delete action (you can create a method for this)
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    // Implement delete functionality, e.g., notify the listener
+                    // Example: onNoteClickListener.onDeleteClick(position);
+                }
+            });
         }
 
         public void updateTasks(List<MyTaskEntities> tasks) {
-            //taskContainer.removeAllViews();
-            if (taskContainer == null) {
-                // Log an error or handle this case
-                Log.e("ToDoListViewHolder", "taskContainer is null");
-                return;
-            }
-
             taskContainer.removeAllViews();
             int maxTasks = Math.min(tasks.size(), 3);
 
@@ -123,7 +126,10 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
 
         @Override
         public void onClick(View v) {
-            this.onNoteClickListener.onNoteClick(getAdapterPosition());  // Trigger the callback with the note position
+            if (onNoteClickListener != null) {
+                onNoteClickListener.onTodoClick(getAdapterPosition());
+            }
+           // this.onNoteClickListener.onTodoClick(getAdapterPosition());  // Trigger the callback with the note position
         }
 
     }
