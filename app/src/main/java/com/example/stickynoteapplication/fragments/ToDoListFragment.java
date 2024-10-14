@@ -19,8 +19,6 @@ import android.widget.ImageView;
 
 import com.example.stickynoteapplication.R;
 import com.example.stickynoteapplication.activities.add_new_todolist;
-import com.example.stickynoteapplication.adapters.MyNoteAdapter;
-import com.example.stickynoteapplication.adapters.MyTaskAdapter;
 import com.example.stickynoteapplication.adapters.ToDoListAdapter;
 import com.example.stickynoteapplication.entities.MyNoteEntities;
 import com.example.stickynoteapplication.entities.MyTaskEntities;
@@ -37,7 +35,7 @@ public class ToDoListFragment extends Fragment implements ToDoListAdapter.OnNote
     private ToDoListAdapter myTodolistAdapter;
 
 
-    private NotesViewModel notesViewModel;
+    private TaskViewModel taskViewModel;
 
     public ToDoListFragment() {
         // Required empty public constructor
@@ -50,22 +48,23 @@ public class ToDoListFragment extends Fragment implements ToDoListAdapter.OnNote
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_to_do_list, container, false);
         addtodoList = view.findViewById(R.id.add_todo);
-        todoRec = view.findViewById(R.id.todo_rec);  // Assuming you have a RecyclerView with this ID in your layout
+        todoRec = view.findViewById(R.id.todo_rec);
         myTodolistAdapter = new ToDoListAdapter(getContext(), this);
 
         // Set up ViewModel and observe changes in the ToDo list
         //taskViewModel = new ViewModelProvider(this).get(TaskViewModel.class);
         todoRec.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         todoRec.setAdapter(myTodolistAdapter);
-        notesViewModel = new ViewModelProvider(this).get(NotesViewModel.class);
+        taskViewModel = new ViewModelProvider(this).get(TaskViewModel.class);
 
 
-        notesViewModel.getAllTodos("TODO_LIST").observe(getViewLifecycleOwner(), new Observer<List<MyNoteEntities>>() {
+        taskViewModel.getAllTodos("TODO_LIST").observe(getViewLifecycleOwner(), new Observer<List<MyNoteEntities>>() {
             @Override
             public void onChanged(List<MyNoteEntities> notes) {
                 if (notes != null) myTodolistAdapter.setNotes(notes);
             }
         });
+
 
         addtodoList.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), add_new_todolist.class);
@@ -108,6 +107,7 @@ public class ToDoListFragment extends Fragment implements ToDoListAdapter.OnNote
     }
 
 
+
 //    @Override
 //    public void onTaskClick(int position) {
 //        // Get the clicked note
@@ -148,13 +148,23 @@ public class ToDoListFragment extends Fragment implements ToDoListAdapter.OnNote
         intent.putExtra("noteContent", clickedTodo.getNoteText());
         startActivityForResult(intent, REQUEST_CODE_ADD_TODO);  // Start the activity for editing
     }
+
+    @Override
+    public void onDeleteClick(int position) {
+        MyNoteEntities todoToDelete = myTodolistAdapter.getNotes().get(position);
+        taskViewModel.deleteTask(todoToDelete);  // Implement this method in your ViewModel
+        myTodolistAdapter.getNotes().remove(position); // Remove from the adapter
+        myTodolistAdapter.notifyItemRemoved(position); // Notify adapter about item removal
+    }
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_ADD_TODO && resultCode == RESULT_OK) {
             // No need to manually refresh the list, LiveData will automatically update the UI
 
-            notesViewModel.getAllTodos("TODO_LIST").observe(getViewLifecycleOwner(), new Observer<List<MyNoteEntities>>() {
+            taskViewModel.getAllTodos("TODO_LIST").observe(getViewLifecycleOwner(), new Observer<List<MyNoteEntities>>() {
                 @Override
                 public void onChanged(List<MyNoteEntities> notes) {
                     if (notes != null) {

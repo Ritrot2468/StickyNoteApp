@@ -29,6 +29,7 @@ import com.example.stickynoteapplication.viewmodels.TaskViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -108,7 +109,15 @@ public class add_new_todolist extends AppCompatActivity {
                 navigateToToDoListFragment();  // Return to ToDoListFragment
             }
         });
+        
     }
+
+        private void navigateToToDoListFragment() {
+            Intent intent = new Intent();
+            setResult(RESULT_OK, intent);
+            finish();
+        }
+
 
     private void updateDateTime() {
         textDateTime.setText(
@@ -119,7 +128,7 @@ public class add_new_todolist extends AppCompatActivity {
     private void addNewTask() {
         // Inflate a new task item layout and add it to the container
         View newTaskView = getLayoutInflater().inflate(R.layout.item_task, null);
-
+        EditText taskDescription = newTaskView.findViewById(R.id.task_content);
         CheckBox checkBox = newTaskView.findViewById(R.id.todo_item_checkbox);
         ImageView deleteButton = newTaskView.findViewById(R.id.delete_item_button);
 
@@ -130,11 +139,26 @@ public class add_new_todolist extends AppCompatActivity {
                 todoItemsContainer.removeView(newTaskView);
             }
         });
-
         // Add the new task view to the container
         todoItemsContainer.addView(newTaskView);
     }
 
+     private List<MyTaskEntities> getTasksFromUI() {
+          List<MyTaskEntities> tasksList = new ArrayList<>();
+
+             for (int i = 0; i < todoItemsContainer.getChildCount(); i++) {
+                 View taskView = todoItemsContainer.getChildAt(i);
+                 CheckBox checkBox = taskView.findViewById(R.id.todo_item_checkbox);
+
+                 MyTaskEntities task = new MyTaskEntities();
+                 task.setTaskDescription(checkBox.getText().toString());
+                 task.setCompleted(checkBox.isChecked());
+
+                 tasksList.add(task);
+             }
+           return tasksList;
+
+     }
 
     private void saveNote() {
         if (inputNoteTitle.getText().toString().trim().isEmpty()) {
@@ -153,77 +177,103 @@ public class add_new_todolist extends AppCompatActivity {
         myNoteEntities.setColor(selectedColor);
         myNoteEntities.setNoteType("TODO_LIST");
 
+        TaskViewModel taskViewModel = new ViewModelProvider(this).get(TaskViewModel.class);
+        taskViewModel.insertTask(myNoteEntities, getTasksFromUI());
         // Save the to-do list and its associated tasks
-        new SaveNoteWithTasksTask().execute(myNoteEntities);
+        //new SaveNoteWithTasksTask().execute(myNoteEntities);
+        navigateToToDoListFragment();
     }
 
 
 
     private void loadTasksForNote() {
-        class LoadTasksForNote extends AsyncTask<Integer, Void, List<MyTaskEntities>> {
-            @Override
-            protected List<MyTaskEntities> doInBackground(Integer... noteIds) {
-                MyNotesDatabase db = MyNotesDatabase.getDatabase(getApplicationContext());
-                return (List<MyTaskEntities>) db.taskDao().getTasksForNote(noteIds[0]);
-            }
-
-            @Override
-            protected void onPostExecute(List<MyTaskEntities> tasks) {
-                // Display the tasks in the UI
+        TaskViewModel taskViewModel = new ViewModelProvider(this).get(TaskViewModel.class);
+        taskViewModel.getTasksforNote(noteId).observe(this, tasks -> {
+            // Update UI with loaded tasks
+            if (tasks != null) {
                 for (MyTaskEntities task : tasks) {
                     View taskView = getLayoutInflater().inflate(R.layout.item_task, null);
                     EditText taskDescription = taskView.findViewById(R.id.task_content);
                     taskDescription.setText(task.getTaskDescription());
                     CheckBox checkBox = taskView.findViewById(R.id.todo_item_checkbox);
-                    checkBox.setText(task.getTaskDescription());
                     checkBox.setChecked(task.isCompleted());
 
                     // Add the task view to the container
                     todoItemsContainer.addView(taskView);
                 }
             }
-        }
-
-        new LoadTasksForNote().execute(noteId);  // Load tasks for the given noteId
+        });
     }
 
-    private void navigateToToDoListFragment() {
-        Intent intent = new Intent();
-        setResult(RESULT_OK, intent);
-        finish();
-    }
 
-    private class SaveNoteWithTasksTask extends AsyncTask<MyNoteEntities, Void, Void> {
-        @Override
-        protected Void doInBackground(MyNoteEntities... myNoteEntities) {
-            MyNotesDatabase db = MyNotesDatabase.getDatabase(getApplicationContext());
 
-            long noteId = db.notesDao().insert(myNoteEntities[0]);
 
-            // Save each task associated with this to-do list
-            for (int i = 0; i < todoItemsContainer.getChildCount(); i++) {
-                View taskView = todoItemsContainer.getChildAt(i);
-                CheckBox checkBox = taskView.findViewById(R.id.todo_item_checkbox);
+//
+//    private void loadTasksForNote() {
+//        class LoadTasksForNote extends AsyncTask<Integer, Void, List<MyTaskEntities>> {
+//            @Override
+//            protected List<MyTaskEntities> doInBackground(Integer... noteIds) {
+//                MyNotesDatabase db = MyNotesDatabase.getDatabase(getApplicationContext());
+//                return (List<MyTaskEntities>) db.taskDao().getTasksForNote(noteIds[0]);
+//            }
+//
+//            @Override
+//            protected void onPostExecute(List<MyTaskEntities> tasks) {
+//                // Display the tasks in the UI
+//                for (MyTaskEntities task : tasks) {
+//                    View taskView = getLayoutInflater().inflate(R.layout.item_task, null);
+//                    EditText taskDescription = taskView.findViewById(R.id.task_content);
+//                    taskDescription.setText(task.getTaskDescription());
+//                    CheckBox checkBox = taskView.findViewById(R.id.todo_item_checkbox);
+//                    checkBox.setText(task.getTaskDescription());
+//                    checkBox.setChecked(task.isCompleted());
+//
+//                    // Add the task view to the container
+//                    todoItemsContainer.addView(taskView);
+//                }
+//            }
+//        }
+//
+//        new LoadTasksForNote().execute(noteId);  // Load tasks for the given noteId
+//    }
 
-                MyTaskEntities task = new MyTaskEntities();
-                task.setNoteId((int) noteId);
-                task.setTaskDescription(checkBox.getText().toString());
-                task.setCompleted(checkBox.isChecked());
-
-                db.taskDao().insert(task);
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            Intent intent = new Intent();
-            setResult(RESULT_OK, intent);
-            finish();  // Close the activity
-        }
-    }
+//    private void navigateToToDoListFragment() {
+//        Intent intent = new Intent();
+//        setResult(RESULT_OK, intent);
+//        finish();
+//    }
+//
+//    private class SaveNoteWithTasksTask extends AsyncTask<MyNoteEntities, Void, Void> {
+//        @Override
+//        protected Void doInBackground(MyNoteEntities... myNoteEntities) {
+//            MyNotesDatabase db = MyNotesDatabase.getDatabase(getApplicationContext());
+//
+//            long noteId = db.notesDao().insert(myNoteEntities[0]);
+//
+//            // Save each task associated with this to-do list
+//            for (int i = 0; i < todoItemsContainer.getChildCount(); i++) {
+//                View taskView = todoItemsContainer.getChildAt(i);
+//                CheckBox checkBox = taskView.findViewById(R.id.todo_item_checkbox);
+//
+//                MyTaskEntities task = new MyTaskEntities();
+//                task.setNoteId((int) noteId);
+//                task.setTaskDescription(checkBox.getText().toString());
+//                task.setCompleted(checkBox.isChecked());
+//
+//                db.taskDao().insert(task);
+//            }
+//
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Void aVoid) {
+//            super.onPostExecute(aVoid);
+//            Intent intent = new Intent();
+//            setResult(RESULT_OK, intent);
+//            finish();  // Close the activity
+//        }
+//    }
 
     private void setViewColor(View view, String selectedColor) {
         Drawable background = view.getBackground();

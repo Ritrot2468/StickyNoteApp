@@ -33,6 +33,7 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
 
     public interface OnNoteClickListener {
         void onTodoClick(int position);
+        void onDeleteClick(int position);
     }
 
 
@@ -106,7 +107,7 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION) {
                     // Implement delete functionality, e.g., notify the listener
-                    // Example: onNoteClickListener.onDeleteClick(position);
+                    onNoteClickListener.onDeleteClick(position);
                 }
             });
         }

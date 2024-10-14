@@ -42,18 +42,26 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.MyTaskView
             MyTaskEntities task = tasks.get(position);
 
             // Clear previous task views
-            holder.taskContainer.removeAllViews();
+            //holder.taskContainer.removeAllViews();
 
             // Add the task to the container
-            View taskView = LayoutInflater.from(holder.itemView.getContext())
-                    .inflate(R.layout.task_item_preview, holder.taskContainer, false);
-            TextView textNote = taskView.findViewById(R.id.prev_task_description);
-            textNote.setText(task.getTaskDescription());
-            holder.taskContainer.addView(taskView);
+            //View taskView = LayoutInflater.from(holder.itemView.getContext())
+            //        .inflate(R.layout.task_item_preview, holder.taskContainer, false);
+            //TextView textNote = taskView.findViewById(R.id.prev_task_description);
+           // textNote.setText(task.getTaskDescription());
+            holder.textnote.setText(task.getTaskDescription());
+           // holder.taskContainer.addView(taskView);
 
             // Set up click listeners
             holder.itemView.setOnClickListener(v -> listener.onTaskClick(position));
-            holder.deleteButton.setOnClickListener(v -> listener.onDeleteTask(tasks.get(position)));
+            holder.deleteButton.setOnClickListener(v -> {
+                listener.onDeleteTask(task);
+                // Remove the task from the list and notify the adapter
+                tasks.remove(position);
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, tasks.size()); // Update the remaining items
+            });
+           // holder.deleteButton.setOnClickListener(v -> listener.onDeleteTask(tasks.get(position)));
         }
     }
 
@@ -74,12 +82,13 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.MyTaskView
     public class MyTaskViewHolder extends RecyclerView.ViewHolder {
         LinearLayout taskContainer;
         ImageButton deleteButton;
+        EditText textnote;
 
         public MyTaskViewHolder(@NonNull View itemView) {
             super(itemView);
             taskContainer = itemView.findViewById(R.id.task_container);
             deleteButton = itemView.findViewById(R.id.delete_button);
-
+            textnote = itemView.findViewById(R.id.task_content);
         }
     }
 

@@ -14,23 +14,25 @@ import java.util.List;
 public class TaskViewModel extends AndroidViewModel {
 
     private LiveData<List<MyTaskEntities>> allTasks;
-
+    private LiveData<List<MyNoteEntities>> allTodos;
     public TaskViewModel(Application application) {
         super(application);
         MyNotesDatabase database = MyNotesDatabase.getDatabase(application);
-        allTasks = database.taskDao().getAllTasks();  // Assuming you have this method in TaskDao
+        allTasks = database.taskDao().getAllTasks();
+        this.allTodos = database.notesDao().getNotesByType("TODO_LIST");
     }
 
     // Method to get all tasks
-    public LiveData<List<MyTaskEntities>> getAllTasks() {
-        return allTasks;
-    }
 
     public LiveData<List<MyTaskEntities>> getTasksforNote(int noteId) {
         return MyNotesDatabase.getDatabase(getApplication()).taskDao().getTasksForNote(noteId);
     }
 
-//    public void insertTask(MyTaskEntities task) {
+    public LiveData<List<MyNoteEntities>> getAllTodos(String type) {
+        return allTodos;
+    }
+
+    //    public void insertTask(MyTaskEntities task) {
 //        MyNotesDatabase.databaseWriteExecutor.execute(() -> {
 //            MyNotesDatabase.getDatabase(getApplication()).taskDao().insert(task);
 //        });
@@ -50,9 +52,9 @@ public void insertTask(MyNoteEntities note, List<MyTaskEntities> tasks) {
         });
     }
 
-    public void deleteTask(MyTaskEntities task) {
+    public void deleteTask(MyNoteEntities todo) {
         MyNotesDatabase.databaseWriteExecutor.execute(() -> {
-            MyNotesDatabase.getDatabase(getApplication()).taskDao().delete(task);
+            MyNotesDatabase.getDatabase(getApplication()).notesDao().delete(todo);
         });
     }
 }
