@@ -164,6 +164,7 @@ public class ToDoListFragment extends Fragment implements ToDoListAdapter.OnNote
         if (requestCode == REQUEST_CODE_ADD_TODO && resultCode == RESULT_OK) {
             // No need to manually refresh the list, LiveData will automatically update the UI
 
+
             taskViewModel.getAllTodos("TODO_LIST").observe(getViewLifecycleOwner(), new Observer<List<MyNoteEntities>>() {
                 @Override
                 public void onChanged(List<MyNoteEntities> notes) {
@@ -171,6 +172,7 @@ public class ToDoListFragment extends Fragment implements ToDoListAdapter.OnNote
                         myTodolistAdapter.setNotes(notes);
                     }
                 }
+
             });
 
         }

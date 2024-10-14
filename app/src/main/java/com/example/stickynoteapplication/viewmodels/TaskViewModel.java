@@ -15,10 +15,12 @@ public class TaskViewModel extends AndroidViewModel {
 
     private LiveData<List<MyTaskEntities>> allTasks;
     private LiveData<List<MyNoteEntities>> allTodos;
+    private LiveData<List<MyNoteEntities>> allNotes;
     public TaskViewModel(Application application) {
         super(application);
         MyNotesDatabase database = MyNotesDatabase.getDatabase(application);
         allTasks = database.taskDao().getAllTasks();
+        allNotes = database.notesDao().getAllNotes();
         this.allTodos = database.notesDao().getNotesByType("TODO_LIST");
     }
 
@@ -45,6 +47,31 @@ public void insertTask(MyNoteEntities note, List<MyTaskEntities> tasks) {
             MyNotesDatabase.getDatabase(getApplication()).taskDao().insert(task);
         }
     });
+}
+
+public void updateTodo(MyNoteEntities note) {
+    if (allNotes.getValue() != null) {
+        // Check if the note already exists
+        boolean exists = false;
+        for (MyNoteEntities existingNote : allNotes.getValue()) {
+            if (existingNote.getId() == note.getId()) {
+                exists = true;
+                MyNotesDatabase.databaseWriteExecutor.execute(() -> {
+                    MyNotesDatabase.getDatabase(getApplication()).notesDao().update(note);
+
+                });
+                break;
+            }
+        }
+
+        // If it does not exist, insert it
+        if (!exists) {
+            // Insert the new note (assuming you have an insert method in your DAO)
+            MyNotesDatabase.databaseWriteExecutor.execute(() -> {
+                MyNotesDatabase.getDatabase(getApplication()).notesDao().insert(note);
+            });
+        }
+    }
 }
     public void updateTask(MyTaskEntities task) {
         MyNotesDatabase.databaseWriteExecutor.execute(() -> {

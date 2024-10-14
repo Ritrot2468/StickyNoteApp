@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -177,11 +178,48 @@ public class add_new_todolist extends AppCompatActivity {
         myNoteEntities.setColor(selectedColor);
         myNoteEntities.setNoteType("TODO_LIST");
 
-        TaskViewModel taskViewModel = new ViewModelProvider(this).get(TaskViewModel.class);
-        taskViewModel.insertTask(myNoteEntities, getTasksFromUI());
-        // Save the to-do list and its associated tasks
-        //new SaveNoteWithTasksTask().execute(myNoteEntities);
-        navigateToToDoListFragment();
+        if (noteId != -1) {
+            myNoteEntities.setId(noteId);  // Set the noteId for updating
+        }
+
+        class SaveNotes extends AsyncTask<Void,Void,Void> {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                MyNotesDatabase db = MyNotesDatabase.getDatabase(getApplicationContext());
+                if (noteId != -1) {
+                    // If noteId is present, update the existing note
+                    db.notesDao().update(myNoteEntities);
+                    Log.d("AddNewToDo", "Note UPDATED");
+                } else {
+                    // Otherwise, insert a new note
+                    long newId = db.notesDao().insert(myNoteEntities);
+                    Log.d("AddNewToDo", "Note inserted with ID: " + newId);
+                }
+                return null;
+
+            }
+
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+
+                Intent intent = new Intent();
+                setResult(RESULT_OK,intent);
+                finish();
+            }
+        }
+        //new SaveNoteAsyncTask(StickyNoteDatabase.getDatabase(this)).execute(newNote);
+
+        new SaveNotes().execute();
+
+            //  TaskViewModel taskViewModel = new ViewModelProvider(this).get(TaskViewModel.class);
+            //taskViewModel.updateTodo(myNoteEntities);
+            // taskViewModel.insertTask(myNoteEntities, getTasksFromUI());
+            // Save the to-do list and its associated tasks
+            //new SaveNoteWithTasksTask().execute(myNoteEntities);
+            //navigateToToDoListFragment();
+
     }
 
 
